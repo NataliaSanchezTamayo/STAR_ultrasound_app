@@ -94,9 +94,9 @@ https://purduestarproj-webrtc-example.herokuapp.com/?user=star-ultrasound&name=S
 
 Once the STAR Mentor starts the connection select the "camera device" on the browser app (splitcam video driver). 
 
-Now ultrasound image is streamed to the Mentor system.
+Now ultrasound image is streamed to the mentor system.
 
-Trouble shooting
+Troubleshooting
 
 - Make sure the pushsource filter  is selected in the splitcam application
     (repeat step 5).
