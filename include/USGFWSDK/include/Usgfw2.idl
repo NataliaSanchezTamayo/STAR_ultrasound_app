@@ -1,0 +1,2071 @@
+// Usgfw2.idl : IDL source for Usgfw2
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (Usgfw2.tlb) and marshalling code.
+
+// To compile this IDL file Microsoft Windows SDK must be installed on your system.
+
+#include "olectl.h"
+import "objidl.idl";
+import "oleidl.idl";
+import "oaidl.idl";
+import "ocidl.idl";
+import "shtypes.idl";
+import "servprov.idl";
+import "strmif.idl";
+import "control.odl";
+import "wtypes.idl";
+import "ocidl.idl";
+
+
+// cpp_quote("#include <d3d9.h>")
+// cpp_quote("#include <dshow.h>")
+// cpp_quote("#include <vmr9.h>")
+
+cpp_quote("#ifndef VIDEO_SOURCE_TAG")
+cpp_quote("#define VIDEO_SOURCE_TAG 0x12345")
+cpp_quote("#endif")
+
+cpp_quote("#ifndef DWORD_PTR")
+cpp_quote("#define DWORD_PTR DWORD")
+cpp_quote("#endif")
+
+interface IEnumUsgProbes;
+interface IEnumLong;
+interface IEnumUsgBeamformers;
+interface IUsgDataView;
+interface IEnumUsgScanModes;
+interface IUsgScanMode;
+interface IEnumUsgStreams;
+interface IUsgDataStream;
+interface IUsgMixerControl;
+interface IUsgBeamformer;
+interface IScanModes;
+interface IUsgControl;
+interface IUsgValues;
+interface IUsgFileStorage;
+
+typedef struct tagMIXBITMAP
+{
+    LONG        bmWidth;
+    LONG        bmHeight;
+    LONG        bmWidthBytes;
+    LONG        bmPlanes;
+    LONG        bmBitsPixel;
+	HBITMAP      bmBits;
+} MIXBITMAP, *PMIXBITMAP;
+
+typedef struct tagUsgMixingBitmap
+{
+	ULONG dwFlags;
+	HDC hdc;
+	HBITMAP hBitmap;
+	MIXBITMAP mixBitmap;
+	RECT rcSrc;
+	RECT rcDest;
+	FLOAT fAlpha;
+	COLORREF clrSrcKey;
+} USG_MIXING_BITMAP, *PUSG_MIXING_BITMAP;
+
+typedef [v1_enum] enum tagThiMode
+{
+	THI_MODE1 = 1,
+	THI_MODE2 = 2,
+	THI_MODE2_ITHI = 0x102,
+} THI_MODE;
+
+[uuid(C07ED72B-4EA2-4cb1-9AF2-798B6192D2CC)]
+struct FREQUENCY3
+{
+	[helpstring("Frequency value")]
+	int nFrequency;
+	[helpstring("THI Mode")]
+	THI_MODE nThiMode;
+};
+
+typedef [v1_enum] enum tagScanState
+{
+	SCAN_STATE_STOP = 0,
+	SCAN_STATE_ACQUIRE = 1,
+	SCAN_STATE_FREEZE = 2,
+	SCAN_STATE_RUN = 3,
+} SCAN_STATE;
+
+typedef [v1_enum] enum tagCineState
+{
+	CINE_STATE_STOP = 0,
+	CINE_STATE_PLAY = 1,
+} CINE_STATE;
+
+typedef [v1_enum] enum tagCineTimeFormat
+{
+	CINE_FORMAT_REFERENCE_TIME = 0,
+	CINE_FORMAT_FRAME = 1,
+	CINE_FORMAT_SAMPLE = 2,
+} CINE_TIME_FORMAT;
+
+typedef [v1_enum] enum tagCineSelectionMode
+{
+	SM_SELECT = 0,
+	SM_DESELECT = 1,
+} SELECTION_MODE;
+
+/*
+typedef [v1_enum] enum tagCineShift
+{
+	CINE_SHIFT_FROM_BEGIN = 0,
+	CINE_SHIFT_FROM_CURRENT = 1,
+	CINE_SHIFT_FROM_END = 2,
+} CINE_SHIFT;
+*/
+
+typedef [v1_enum] enum tagImageRotate
+{
+	IMAGE_ROTATE_NONE = 0,
+	IMAGE_ROTATE_90CCW = 1,
+	IMAGE_ROTATE_180CCW = 2,
+	IMAGE_ROTATE_270CCW = 3,
+} IMAGE_ROTATE;
+
+typedef [v1_enum] enum tagPixelsOrigin
+{
+	PIXELS_ORIGIN_WINDOW = 0,
+	PIXELS_ORIGIN_OUTPUTRECT = 1,
+} PIXELS_ORIGIN;
+
+typedef [v1_enum] enum tagSweepMode
+{
+	SWEEP_MODE_CYCLE = 0,
+	SWEEP_MODE_SCROLL = 1,
+} SWEEP_MODE;
+
+typedef [v1_enum] enum tagDeviceState
+{
+	DEVICE_STATE_CLOSED = 0,
+	DEVICE_STATE_OPENED  = 1,
+	DEVICE_STATE_INUSE = 2,
+	DEVICE_STATE_HARDWARE_ERROR = 3,
+	DEVICE_STATE_WRONG_POWER = 4,
+	DEVICE_STATE_REMOVED = 5,
+	DEVICE_STATE_UNINITIALIZED = 6,
+	DEVICE_STATE_REVISION_MISMATCH = 7
+} DEVICE_STATE;
+
+typedef [v1_enum] enum tagBeamformerType
+{
+	BEAMFORMER_EchoBlaster64 = 0,
+	BEAMFORMER_EchoBlaster128,
+	BEAMFORMER_EchoBlaster128RevC,
+	BEAMFORMER_LogicScan128
+} BEAMFORMER_TYPE;
+
+typedef [v1_enum] enum tagBioeffectIndex
+{
+	INDEX_MI = 0,
+	INDEX_TI,
+	INDEX_TIS,
+	INDEX_TIB,
+	INDEX_TIC
+} BIOEFFECT_INDEX;
+
+typedef [v1_enum] enum tagBatteryChargeStatus
+{
+	Charging = 1,
+	Critical = 2,
+	High = 4,
+	Low = 8,
+	NoBattery = 0x10,
+	ChargeUnknown = 0xff
+} BATTERY_CHARGE_STATUS;
+
+typedef [v1_enum] enum tagPowerLineStatus
+{
+	Offline = 0,
+	Online,
+	LineUnknown
+} POWER_LINE_STATUS;
+
+typedef [v1_enum] enum tagProbeType
+{
+	PROBETYPE_Undefined = 0,
+	PROBETYPE_Linear,
+	PROBETYPE_Convex,
+	PROBETYPE_PhasedArray,
+	PROBETYPE_TProbe,
+	PROBETYPE_Convex3D,
+	PROBETYPE_ProbeDuo
+} PROBE_TYPE;
+
+typedef struct tagFocalZone
+{
+	LONG nFocusPoint;
+	LONG nZoneBegin;
+	LONG nZoneEnd;
+} FOCAL_ZONE, *PFOCAL_ZONE;
+
+typedef struct tagImageResolution
+{
+	LONG nXPelsPerUnit;
+	LONG nYPelsPerUnit;
+} IMAGE_RESOLUTION, *PIMAGE_RESOLUTION;
+
+typedef struct tagValueBounds
+{
+	LONG minimum;
+	LONG maximum;
+} VALUE_BOUNDS, *PVALUE_BOUNDS;
+
+typedef struct tagValueStepping
+{
+	LONG stepping;
+	LONG minimum;
+	LONG maximum;
+} VALUE_STEPPING, *PVALUE_STEPPING;
+
+typedef [v1_enum] enum tagUnitBase
+{
+	Code = 0,
+	Second,
+	Meter,
+	Bell,
+	Hertz,
+	Gramm,
+	Percent,
+	Volt
+} UNIT_BASE;
+
+typedef struct tagScaleFactor
+{
+	LONG Numerator;
+	LONG Denominator;
+} SCALE_FACTOR, *PSCALE_FACTOR;
+
+typedef struct tagUsgUnit
+{
+	UNIT_BASE UnitBase;
+	SCALE_FACTOR ScaleFactor;
+} USG_UNIT, *PUSG_UNIT;
+
+[
+	object,
+	uuid(BFEF8670-DBC1-4B47-BC01-BBBCA174DD31),
+	dual,
+	nonextensible,
+	helpstring("IUsgDataView Interface"),
+	pointer_default(unique)
+]
+interface IUsgDataView : IDispatch{
+	[propget, id(1), helpstring("property ScanMode")] HRESULT ScanMode([out, retval] ULONG* pVal);
+	[propput, id(1), helpstring("property ScanMode")] HRESULT ScanMode([in] ULONG newVal);
+	[propget, id(2), helpstring("property ScanState")] HRESULT ScanState([out, retval] SCAN_STATE* pVal);
+	[propput, id(2), helpstring("property ScanState")] HRESULT ScanState([in] SCAN_STATE newVal);
+	[propget, id(3), helpstring("property ScanModes")] HRESULT ScanModes([out, retval] IScanModes** pVal);
+	[id(4), helpstring("method GetScanModeObj")] HRESULT GetScanModeObj([in] ULONG scanMode, [out] IUsgScanMode** pUsgScanMode);
+	[propget, id(5), helpstring("property FilgraphManager")] HRESULT FilgraphManager([out, retval] IMediaControl** pVal);
+	[id(6), helpstring("method GetControlObj")] HRESULT GetControlObj([in] const IID* riidCtrl, [in] ULONG scanMode, [in] ULONG streamId, [out] IUsgControl** ppObj);
+//	[id(7), helpstring("method GetProfileInt")] HRESULT GetProfileInt([in] BSTR section, [in] BSTR entry, [out,retval] LONG* pValue);
+//	[id(8), helpstring("method WriteProfileInt")] HRESULT WriteProfileInt([in] BSTR section, [in] BSTR entry, [in] LONG value);
+//	[id(9), helpstring("method GetProfileString")] HRESULT GetProfileString([in] BSTR section, [in] BSTR entry, [out,retval] BSTR* pValue);
+//	[id(10), helpstring("method WriteProfileString")] HRESULT WriteProfileString([in] BSTR section, [in] BSTR entry, [in] BSTR value);
+//	[id(11), helpstring("method GetProfileBinary")] HRESULT GetProfileBinary([in] BSTR section, [in] BSTR entry, [in] LONG cBytes, [out, size_is(cBytes)] BYTE* pData, [out,retval] LONG* nDataSize);
+//	[id(12), helpstring("method WriteProfileBinary")] HRESULT WriteProfileBinary([in] BSTR section, [in] BSTR entry, [in] LONG cBytes, [in, size_is(cBytes)] BYTE* pData);
+//	[id(13), helpstring("method VideoOutputPause")] HRESULT VideoOutputPause(void);
+//	[id(14), helpstring("method VideoOutputRun")] HRESULT VideoOutputRun(void);
+	[id(7), helpstring("method CreateUsgfwFile")] HRESULT CreateUsgfwFile([in] BSTR FileName, [in] LONG createFlags, [out, retval] IUsgFileStorage** ppFileObject);
+};
+[
+	object,
+	uuid(B8CBA727-D104-416E-B0CC-C62E9CF9B1F9),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanMode Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanMode : IDispatch{
+	[id(1), helpstring("method GetMixerControl")] HRESULT GetMixerControl([in] ULONG scanMode, [in] ULONG streamId, [out] IUsgMixerControl** ppMixerCtrl);
+	[id(2), helpstring("method GetControlObj")] HRESULT GetControlObj([in] const IID* riidCtrl, [in] LONG scanMode, [in] ULONG streamId, [out] IUsgControl** ppCtrl);
+	[id(3), helpstring("method CreateCopy")] HRESULT CreateCopy([out,retval] IUsgScanMode** ppNewScanMode);
+	[id(4), helpstring("method Union")] HRESULT Union([in] ULONG nScanMode);
+	[propget, id(5), helpstring("property StreamsCollection")] HRESULT StreamsCollection([out, retval] IUnknown** pVal);
+	[propget, id(6), helpstring("property ScanMode")] HRESULT ScanMode([out, retval] ULONG* pVal);
+	[id(7), helpstring("method CreateClone")] HRESULT CreateClone([out,retval] IUsgScanMode** ppNewScanMode);
+};
+[
+	object,
+	uuid(EDF488C3-5BE4-4D32-B96F-D9BDDFC77C43),
+	dual,
+	nonextensible,
+	helpstring("IUsgDataStream Interface"),
+	pointer_default(unique)
+]
+interface IUsgDataStream : IDispatch{
+	[id(1), helpstring("method GetStreamMode")] HRESULT GetStreamMode([out,retval] ULONG* pMode);
+	//[id(2), helpstring("method SetOutputWindow")] HRESULT SetOutputWindow([in] LONG hWnd, [in] RECT* prcOutput);
+	[id(2), helpstring("method GetControlObj")] HRESULT GetControlObj([in] REFIID riid, [out,retval] IUnknown** ppobj);
+	[id(3), helpstring("method GetMixerControl")] HRESULT GetMixerControl([out,retval] IUsgMixerControl** ppMixerControl);
+	[propget, id(4), helpstring("property StreamId")] HRESULT StreamId([out, retval] ULONG* pVal);
+	[propget, id(5), helpstring("property ScanState")] HRESULT ScanState([out, retval] SCAN_STATE* pVal);
+	[propput, id(5), helpstring("property ScanState")] HRESULT ScanState([in] SCAN_STATE newVal);
+};
+[
+	object,
+	uuid(B7C94539-A65A-42F3-8B65-F83D114FF4C8),
+	dual,
+	nonextensible,
+	helpstring("IUsgMixerControl Interface"),
+	pointer_default(unique)
+]
+interface IUsgMixerControl : IDispatch{
+	[id(1), helpstring("method SetOutputWindow")] HRESULT SetOutputWindow([in] LONG hWnd);
+	[id(2), helpstring("method GetAlphaBitmapParameters")] HRESULT GetAlphaBitmapParameters([out] USG_MIXING_BITMAP* pBmpParams);
+	[id(3), helpstring("method SetAlphaBitmap")] HRESULT SetAlphaBitmap([in] USG_MIXING_BITMAP* pBmpParams);
+	[id(4), helpstring("method UpdateAlphaBitmapParameters")] HRESULT UpdateAlphaBitmapParameters([in] USG_MIXING_BITMAP* pBmpParams);
+	[id(5), helpstring("method SetOutputRect")] HRESULT SetOutputRect([in] RECT* pRect);
+	[id(6), helpstring("method Capture")] HRESULT Capture([out] IPictureDisp** ppCurrentImage);
+	[id(7), helpstring("method GetCurrentBitmap")] HRESULT GetCurrentBitmap([out,retval] LONG* handle);
+	[id(8), helpstring("method Repaint")] HRESULT Repaint(LONG hWindow, LONG hDC);
+	[propget, id(9), helpstring("property ScanState")] HRESULT ScanState([out, retval] SCAN_STATE* pVal);
+	[propput, id(9), helpstring("property ScanState")] HRESULT ScanState([in] SCAN_STATE newVal);
+	//[id(10), helpstring("method FrameBufferPrevFrame")] HRESULT FrameBufferPrevFrame(void);
+	//[id(11), helpstring("method FrameBufferNextFrame")] HRESULT FrameBufferNextFrame(void);
+	//[id(12), helpstring("method FrameBufferClear")] HRESULT FrameBufferClear(void);
+	//[propget, id(13), helpstring("property FrameBufferSize")] HRESULT FrameBufferSize([out, retval] LONG* pVal);
+	//[propput, id(13), helpstring("property FrameBufferSize")] HRESULT FrameBufferSize([in] LONG newVal);
+	//[propget, id(14), helpstring("property FrameBufferCurrentFrameIdx")] HRESULT FrameBufferCurrentFrameIdx([out, retval] LONG* pVal);
+	//[propput, id(14), helpstring("property FrameBufferCurrentFrameIdx")] HRESULT FrameBufferCurrentFrameIdx([in] LONG newVal);
+	//[id(15), helpstring("method Test")] HRESULT Test([in] LONG n);
+	[propget, id(10), helpstring("property BkColor")] HRESULT BkColor([out, retval] PALETTEENTRY* pVal);
+	[propput, id(10), helpstring("property BkColor")] HRESULT BkColor([in] PALETTEENTRY newVal);
+	[id(11), helpstring("method GetOutputRect")] HRESULT GetOutputRect([out] RECT* pRect);
+};
+[
+	object,
+	uuid(4363F1DB-1261-4BD6-99E5-B483ECB35218),
+	dual,
+	nonextensible,
+	helpstring("IUsgData Interface"),
+	pointer_default(unique)
+]
+interface IUsgData : IDispatch{
+};
+[
+	object,
+	uuid(739FDDCE-29FF-44D9-9C3C-3E6813A67969),
+	dual,
+	nonextensible,
+	helpstring("IUsgGraph Interface"),
+	pointer_default(unique)
+]
+interface IUsgGraph : IDispatch{
+};
+
+[
+	object,
+	uuid(9717780E-AAAF-4FD2-835A-80910E1E803E),
+	dual,
+	nonextensible,
+	helpstring("IUsgDeviceChangeSink Interface"),
+	pointer_default(unique)
+]
+interface IUsgDeviceChangeSink : IDispatch{
+	[id(1), helpstring("method OnProbeArrive")] HRESULT OnProbeArrive([in] IUnknown* pUsgProbe, [in,out] ULONG* reserved);
+	[id(2), helpstring("method OnBeamformerArrive")] HRESULT OnBeamformerArrive([in] IUnknown* pUsgBeamformer, [in,out] ULONG* reserved);
+	[id(3), helpstring("method OnProbeRemove")] HRESULT OnProbeRemove([in] IUnknown* pUsgProbe, [in,out] ULONG* reserved);
+	[id(4), helpstring("method OnBeamformerRemove")] HRESULT OnBeamformerRemove([in] IUnknown* pUsgBeamformer, [in,out] ULONG* reserved);
+	[id(5), helpstring("method OnProbeStateChanged")] HRESULT OnProbeStateChanged([in] IUnknown* pUsgProbe, [in,out] ULONG* reserved);
+	[id(6), helpstring("method OnBeamformerStateChanged")] HRESULT OnBeamformerStateChanged([in] IUnknown* pUsgBeamformer, [in,out] ULONG* reserved);
+};
+
+[
+	object,
+	uuid(7391AEBB-13BB-4ffe-AE84-48CD63B523A0),
+	dual,
+	nonextensible,
+	helpstring("IScanDepth Interface"),
+	pointer_default(unique)
+]
+interface IScanDepth : IDispatch{
+	[id(1), helpstring("method GetScanDepth")] HRESULT GetScanDepth([out,retval] LONG* pScanDepth);
+	[id(2), helpstring("method SetScanDepth")] HRESULT SetScanDepth([in] LONG nScanDepth);
+	[id(3), helpstring("method GetScanDepthRange")] HRESULT GetScanDepthRange([out] LONG* pScanDepthMin, [out] LONG* pScanDepthMax);
+//	[id(4), helpstring("method EnumPreferedDepths")] HRESULT EnumPreferedDepths([out,retval] IEnumUInt** ppEnum);
+};
+
+[
+	object,
+	uuid(AAE0C833-BFE6-4594-984E-8B9FD48CA487),
+	dual,
+	nonextensible,
+	helpstring("IUsgfw2 Interface"),
+	pointer_default(unique)
+]
+interface IUsgfw2 : IDispatch{
+	[propget, id(1), helpstring("property ProbesCollection")] HRESULT ProbesCollection([out, retval] IUnknown** pVal);
+	[propget, id(2), helpstring("property BeamformersCollection")] HRESULT BeamformersCollection([out, retval] IUnknown** pVal);
+	[id(3), helpstring("method CreateDataView")] HRESULT CreateDataView([in] IUnknown* pUnkSource, [out,retval] IUsgDataView** ppUsgDataView);
+	[id(4), helpstring("method Invalidate")] HRESULT Invalidate(void);
+	[id(5), helpstring("method BeamformerNameFromCode")] HRESULT BeamformerNameFromCode([in] LONG Code, [out,retval] BSTR* Name);
+	[id(6), helpstring("method BeamformerCodeFromName")] HRESULT BeamformerCodeFromName([in] BSTR Name, [out,retval] LONG* Code);
+	[id(7), helpstring("method ProbeNameFromCode")] HRESULT ProbeNameFromCode([in] LONG Code, [out,retval] BSTR* Name);
+	[id(8), helpstring("method ProbeCodeFromName")] HRESULT ProbeCodeFromName([in] BSTR Name, [out,retval] LONG* Code);
+	[id(9), helpstring("method CreateUsgfwFile")] HRESULT CreateUsgfwFile([in] BSTR fileName, [in] LONG createFlags, [out,retval] IUsgFileStorage** ppFileObject);
+};
+[
+	object,
+	uuid(1C3AF9E8-2597-4A1C-ADEA-6F9A17645A16),
+	dual,
+	nonextensible,
+	helpstring("IProbesCollection Interface"),
+	pointer_default(unique)
+]
+interface IProbesCollection : IDispatch{
+};
+
+[
+	object,
+	uuid(EAA864EC-F0B8-49EF-BF78-09B8379D0D62),
+	dual,
+	nonextensible,
+	helpstring("IUsgCollection Interface"),
+	pointer_default(unique)
+]
+interface IUsgCollection : IDispatch{
+	import "oaidl.idl";
+	[propget, id(1), helpstring("property Count")] HRESULT Count([out, retval] LONG* pVal);
+	[id(2), helpstring("method Item")] HRESULT Item([in] LONG lItem, [out] IUnknown** ppUnk);
+};
+
+
+
+[
+	object,
+	uuid(264096B1-8393-4060-907B-917C395FF97C),
+	dual,
+	nonextensible,
+	helpstring("IProbe Interface"),
+	pointer_default(unique)
+]
+interface IProbe : IDispatch{
+	import "oaidl.idl";
+	[propget, id(1), helpstring("property Name")] HRESULT Name([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property Beamformer")] HRESULT Beamformer([out, retval] IUnknown** pVal);
+	[propget, id(3), helpstring("property DeviceState")] HRESULT DeviceState([out, retval] DEVICE_STATE* pVal);
+	[propget, id(4), helpstring("property DispalyName")] HRESULT DispalyName([out, retval] BSTR* pVal);
+	[propget, id(5), helpstring("property Code")] HRESULT Code([out, retval] LONG* pVal);
+};
+
+
+[
+	object,
+	uuid(7500FEC3-E775-4d0c-91D8-59DF9C3ED7EB),
+	dual,
+	helpstring("IProbe2 Interface"),
+	pointer_default(unique)
+]
+interface IProbe2 : IProbe{
+	import "oaidl.idl";
+	[propget, id(6), helpstring("property Type")] HRESULT Type([out, retval] PROBE_TYPE* pVal);
+	[propget, id(7), helpstring("property SerialNumber")] HRESULT SerialNumber([in] LONG index, [out, retval] BSTR* pVal);
+};
+
+[
+	object,
+	uuid(1AF2973E-1991-4A7A-86AF-7EA0150C6925),
+	dual,
+	nonextensible,
+	helpstring("IBeamformer Interface"),
+	pointer_default(unique)
+]
+interface IBeamformer : IDispatch{
+	import "oaidl.idl";
+	[propget, id(1), helpstring("property Name")] HRESULT Name([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property Probes")] HRESULT Probes([out, retval] IUnknown** pVal);
+	[propget, id(3), helpstring("property DeviceState")] HRESULT DeviceState([out, retval] DEVICE_STATE* pVal);
+	[propget, id(4), helpstring("property DisplayName")] HRESULT DisplayName([out, retval] BSTR* pVal);
+	[id(5), helpstring("method OpenDevice")] HRESULT OpenDevice(void);
+	[id(6), helpstring("method SwitchConnector")] HRESULT SwitchConnector(void);
+	[id(7), helpstring("method SwitchConnectorSupported")] HRESULT SwitchConnectorSupported([out,retval] LONG* bSupported);
+	[propget, id(8), helpstring("property Code")] HRESULT Code([out, retval] LONG* pVal);
+};
+[
+	object,
+	uuid(60C480B7-F1E7-403C-8AF3-8DCED99A2560),
+	dual,
+	nonextensible,
+	helpstring("IScanModes Interface"),
+	pointer_default(unique)
+]
+interface IScanModes : IDispatch{
+	[propget, id(1), helpstring("property Count")] HRESULT Count([out, retval] LONG* pVal);
+	[id(2), helpstring("method Item")] HRESULT Item([in] LONG lItem, [out] ULONG* pScanMode);
+};
+
+[
+	object,
+	uuid(5748CA80-1710-489F-BC13-28F2C0122B49),
+	dual,
+	nonextensible,
+	helpstring("IUsgControl Interface"),
+	pointer_default(unique)
+]
+interface IUsgControl : IDispatch{
+};
+[
+	object,
+	uuid(A18F0D3F-DD69-4BDE-8F26-4F54D67B57D0),
+	dual,
+	nonextensible,
+	helpstring("IUsgGain Interface"),
+	pointer_default(unique)
+]
+interface IUsgGain : IDispatch{
+//	[propget, id(1), helpstring("property Min")] HRESULT Min([out, retval] LONG* pVal);
+//	[propget, id(2), helpstring("property Max")] HRESULT Max([out, retval] LONG* pVal);
+//	[propget, id(3), helpstring("property Step")] HRESULT Step([out, retval] LONG* pVal);
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(95D11D2B-EC05-4A2E-B31B-1386C484AE16),
+	dual,
+	nonextensible,
+	helpstring("IUsgValues Interface"),
+	pointer_default(unique)
+]
+interface IUsgValues : IDispatch{
+	[propget, id(1), helpstring("property Count")] HRESULT Count([out, retval] LONG* pVal);
+	[id(2), helpstring("method Item")] HRESULT Item([in] LONG lItem, [out,retval] VARIANT* pValue);
+};
+[
+	object,
+	uuid(F23DC92E-60CB-4EAE-8CD1-BD729E8D785C),
+	dual,
+	nonextensible,
+	helpstring("IUsgPower Interface"),
+	pointer_default(unique)
+]
+interface IUsgPower : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(B3194B41-4E87-4787-8E79-25633A7596D9),
+	dual,
+	nonextensible,
+	helpstring("IUsgDynamicRange Interface"),
+	pointer_default(unique)
+]
+interface IUsgDynamicRange : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(3FD666AF-C2B5-4A5D-AFCA-30EDE03427E2),
+	dual,
+	nonextensible,
+	helpstring("IUsgFrameAvg Interface"),
+	pointer_default(unique)
+]
+interface IUsgFrameAvg : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(3FE7E792-42A5-45D1-B054-7BF47C67DBFB),
+	dual,
+	nonextensible,
+	helpstring("IUsgRejection2 Interface"),
+	pointer_default(unique)
+]
+interface IUsgRejection2 : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(53FCF15D-3C94-4AB3-9B8E-0CD67D733A24),
+	dual,
+	nonextensible,
+	helpstring("IUsgProbeFrequency2 Interface"),
+	pointer_default(unique)
+]
+interface IUsgProbeFrequency2 : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(812D829E-9D55-406A-B89D-31A410839F87),
+	dual,
+	nonextensible,
+	helpstring("IUsgDepth Interface"),
+	pointer_default(unique)
+]
+interface IUsgDepth : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(859BCBDB-015C-4439-9702-F0CB0FDF8059),
+	dual,
+	nonextensible,
+	helpstring("IUsgImageOrientation Interface"),
+	pointer_default(unique)
+]
+interface IUsgImageOrientation : IDispatch{
+//	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+//	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+//	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(1), helpstring("property Mirror")] HRESULT Mirror([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Mirror")] HRESULT Mirror([in] LONG newVal);
+	[propget, id(2), helpstring("property Rotate")] HRESULT Rotate([out, retval] IMAGE_ROTATE* pVal);
+	[propput, id(2), helpstring("property Rotate")] HRESULT Rotate([in] IMAGE_ROTATE newVal);
+};
+[
+	object,
+	uuid(90C02711-657D-436C-B865-DA76E7B5EA76),
+	dual,
+	nonextensible,
+	helpstring("IUsgImageEnhancement Interface"),
+	pointer_default(unique)
+]
+interface IUsgImageEnhancement : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property Enabled")] HRESULT Enabled([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property Enabled")] HRESULT Enabled([in] LONG newVal);
+};
+[
+	object,
+	uuid(0F5EAEE8-9C4E-4714-8F85-17D31CD25FC6),
+	dual,
+	nonextensible,
+	helpstring("IUsgViewArea Interface"),
+	pointer_default(unique)
+]
+interface IUsgViewArea : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(118427F8-BAAC-4F29-B85C-DCFCD63573FE),
+	dual,
+	nonextensible,
+	helpstring("IUsgLineDensity Interface"),
+	pointer_default(unique)
+]
+interface IUsgLineDensity : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(53502AB7-C0FB-4B31-A4EB-23C092D6D13A),
+	dual,
+	nonextensible,
+	helpstring("IUsgFocus Interface"),
+	pointer_default(unique)
+]
+interface IUsgFocus : IDispatch{
+	[propget, id(1), helpstring("property CurrentMode")] HRESULT CurrentMode([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property CurrentMode")] HRESULT CurrentMode([in] LONG newVal);
+	[propget, id(2), helpstring("property ValuesMode")] HRESULT ValuesMode([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property FocusSet")] HRESULT FocusSet([in] LONG mode, [out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property FocusSet")] HRESULT FocusSet([in] LONG mode, [in] LONG newVal);
+	[propget, id(4), helpstring("property FocusSetCount")] HRESULT FocusSetCount([in] LONG mode, [out, retval] LONG* pVal);
+	[id(5), helpstring("method GetFocalZonesCount")] HRESULT GetFocalZonesCount([in] LONG mode, [in] LONG focusSet, [out,retval] LONG* pFocalZones);
+	[id(6), helpstring("method GetFocalZone")] HRESULT GetFocalZone([in] LONG mode, [in] LONG focusSet, [in] LONG zoneIndex, [out] FOCAL_ZONE* pFocalZone);
+	[id(7), helpstring("method GetFocusPoint")] HRESULT GetFocusPoint([in] LONG mode, [in] LONG focusSet, [in] LONG zoneIndex, [out,retval] LONG* pFocusPoint);
+	[id(8), helpstring("method GetFocusState")] HRESULT GetFocusState([in] LONG mode , [in] LONG focusSet, [in] ULONG entries, [out, size_is(entries)] LONG *pFocusState);
+	[id(9), helpstring("method SetFocusState")] HRESULT SetFocusState([in] LONG mode, [in] LONG focusSet, [in] ULONG entries, [in, size_is(entries)] LONG *pFocusState);
+};
+[
+	object,
+	uuid(5AA2CBAF-30F9-4F20-A7F8-BB77A7C86D71),
+	dual,
+	nonextensible,
+	helpstring("IUsgTgc Interface"),
+	pointer_default(unique)
+]
+interface IUsgTgc : IDispatch{
+	[id(1), helpstring("method GetTgcEntries")] HRESULT GetTgcEntries([in] LONG startIndex, [in] LONG entries, [out] LONG* pTgcData);
+	[id(2), helpstring("method SetTgcEntries")] HRESULT SetTgcEntries([in] LONG startIndex, [in] LONG entries, [in] LONG* pTgcData);
+	[id(3), helpstring("method GetTgcSize")] HRESULT GetTgcSize([out,retval] LONG* pVal);
+	[id(4), helpstring("method PositionToDepth")] HRESULT PositionToDepth([in] LONG pos, [out,retval] LONG* depth);
+	[id(5), helpstring("method DepthToPosition")] HRESULT DepthToPosition([in] LONG depth, [out,retval] LONG* pos);
+	[propget, id(6), helpstring("Retrieves TGC value in the specified control point")] HRESULT Current([in] LONG ctlPoint, [out, retval] LONG* pVal);
+	[propput, id(6), helpstring("Sets TGC value in the specified control point")] HRESULT Current([in] LONG ctlPoint, [in] LONG newVal);
+	[propget, id(7), helpstring("property CtlPointsCount")] HRESULT CtlPointsCount([out, retval] LONG* pVal);
+	[propput, id(7), helpstring("property CtlPointsCount")] HRESULT CtlPointsCount([in] LONG newVal);
+	[propget, id(8), helpstring("property CtlPointPos")] HRESULT CtlPointPos([in] LONG ctlPoint, [out, retval] LONG* pVal);
+	[propget, id(9), helpstring("property ValuesTgc")] HRESULT ValuesTgc([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(5B07F59F-E2B9-4045-9C23-BBAA62886078),
+	dual,
+	nonextensible,
+	helpstring("IUsgClearView Interface"),
+	pointer_default(unique)
+]
+interface IUsgClearView : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property Enabled")] HRESULT Enabled([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property Enabled")] HRESULT Enabled([in] LONG newVal);
+};
+[
+	object,
+	uuid(537B5EA9-246B-4AF5-A199-5893ED41620E),
+	dual,
+	nonextensible,
+	helpstring("IUsgPaletteCalculator Interface"),
+	pointer_default(unique)
+]
+interface IUsgPaletteCalculator : IDispatch{
+	[propget, id(1), helpstring("property Brightness")] HRESULT Brightness([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Brightness")] HRESULT Brightness([in] LONG newVal);
+	[propget, id(2), helpstring("property Contrast")] HRESULT Contrast([out, retval] LONG* pVal);
+	[propput, id(2), helpstring("property Contrast")] HRESULT Contrast([in] LONG newVal);
+	[propget, id(3), helpstring("property Gamma")] HRESULT Gamma([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property Gamma")] HRESULT Gamma([in] LONG newVal);
+	[propget, id(4), helpstring("property Negative")] HRESULT Negative([out, retval] BOOL* pVal);
+	[propput, id(4), helpstring("property Negative")] HRESULT Negative([in] BOOL newVal);
+	[propget, id(5), helpstring("property BrightnessMin")] HRESULT BrightnessMin([out, retval] LONG* pVal);
+	[propget, id(6), helpstring("property BrightnessMax")] HRESULT BrightnessMax([out, retval] LONG* pVal);
+	[propget, id(7), helpstring("property ContrastMin")] HRESULT ContrastMin([out, retval] LONG* pVal);
+	[propget, id(8), helpstring("property ContrastMax")] HRESULT ContrastMax([out, retval] LONG* pVal);
+	[propget, id(9), helpstring("property GammaMin")] HRESULT GammaMin([out, retval] LONG* pVal);
+	[propget, id(10), helpstring("property GammaMax")] HRESULT GammaMax([out, retval] LONG* pVal);
+	[id(11), helpstring("method SetReferenceData")] HRESULT SetReferenceData([in] LONG nValueMax, [in] LONG nValuesCount, [in] LONG* pData);
+	[id(12), helpstring("method GetReferenceData")] HRESULT GetReferenceData([out] LONG* pValueMax, [in,out] LONG* pValuesCount, [out] LONG* pData);
+	[id(13), helpstring("method Calculate")] HRESULT Calculate([in] LONG startIndex, [in] LONG entries, [out] LONG* pData);
+};
+[
+	object,
+	uuid(39F0DB4B-5197-4E11-ABB6-7C8735E6B7AE),
+	dual,
+	nonextensible,
+	helpstring("IUsgPalette Interface"),
+	pointer_default(unique)
+]
+interface IUsgPalette : IDispatch{
+	[id(1), helpstring("method SetPaletteEntries")] HRESULT SetPaletteEntries([in] LONG startIndex, [in] LONG entries, [in] PALETTEENTRY* pPalEntries);
+	[id(2), helpstring("method GetPaletteEntries")] HRESULT GetPaletteEntries([in] LONG startIndex, [in] LONG entries, [out] PALETTEENTRY* pPalEntries);
+};
+[
+	object,
+	uuid(27C0A0A4-475B-423C-BF8B-82FC56AD7573),
+	dual,
+	nonextensible,
+	helpstring("IUsgImageProperties Interface"),
+	pointer_default(unique)
+]
+interface IUsgImageProperties : IDispatch{
+	[id(1), helpstring("method GetOrigin")] HRESULT GetOrigin([out] POINT* point, PIXELS_ORIGIN pixelsOrigin, [in] BOOL fPrefered);
+	[id(2), helpstring("method SetOrigin")] HRESULT SetOrigin([in] POINT* point, PIXELS_ORIGIN pixelsOrigin);
+	[id(3), helpstring("method GetResolution")] HRESULT GetResolution([out] IMAGE_RESOLUTION* resolution, [in] BOOL fPrefered);
+	[id(4), helpstring("method SetResolution")] HRESULT SetResolution([in] IMAGE_RESOLUTION* resolution);
+	[propget, id(5), helpstring("property AutoProbeCenter")] HRESULT AutoProbeCenter([out, retval] LONG* pVal);
+	[propput, id(5), helpstring("property AutoProbeCenter")] HRESULT AutoProbeCenter([in] LONG newVal);
+	[propget, id(6), helpstring("property AutoResolution")] HRESULT AutoResolution([out, retval] LONG* pVal);
+	[propput, id(6), helpstring("property AutoResolution")] HRESULT AutoResolution([in] LONG newVal);
+	[id(7), helpstring("method PixelsToUnits")] HRESULT PixelsToUnits([in] FLOAT Xpix, [in] FLOAT Ypix, [out] FLOAT* Xunit, [out] FLOAT* Yunit, [in] PIXELS_ORIGIN pixOrigin);
+	[id(8), helpstring("method UnitsToPixels")] HRESULT UnitsToPixels([in] FLOAT Xunit, [in] FLOAT Yunit, [out] FLOAT* XPix, [out] FLOAT* Ypix, [in] PIXELS_ORIGIN pixOrigin);
+	[id(9), helpstring("method SetViewRect")] HRESULT SetViewRect([in] FLOAT left, [in] FLOAT top, [in] FLOAT right, [in] FLOAT bottom);
+	[id(10), helpstring("method GetViewRect")] HRESULT GetViewRect([out] FLOAT* left, [out] FLOAT* top, [out] FLOAT* right, [out] FLOAT* bottom, [in] BOOL fPrefered);
+	[id(11), helpstring("method SetZoom")] HRESULT SetZoom([in] FLOAT ZoomCenterX, [in] FLOAT ZoomCenterY, [in] LONG ZoomFactor);
+	[id(12), helpstring("method GetZoom")] HRESULT GetZoom([out] FLOAT* ZoomCenterX, [out] FLOAT* ZooomCenterY, [out] LONG* ZoomFactor, [in] BOOL fPrefered);
+};
+[
+	object,
+	uuid(9E38438A-733B-4784-8C68-60241ED49859),
+	dual,
+	nonextensible,
+	helpstring("IUsgControlChangeSink Interface"),
+	pointer_default(unique)
+]
+interface IUsgControlChangeSink : IDispatch{
+	[id(1), helpstring("method ControlChanged")] HRESULT ControlChanged([in] LONG dispId, [in] LONG flags);
+};
+
+[
+	object,
+	uuid(AFA64E76-249A-4606-8EEF-E4FD802AE9EF),
+	dual,
+	nonextensible,
+	helpstring("IUsgCtrlChangeCommon Interface"),
+	pointer_default(unique)
+]
+interface IUsgCtrlChangeCommon : IDispatch{
+	[id(1), helpstring("method OnControlChanged")] HRESULT OnControlChanged([in] REFIID riidCtrl, [in] ULONG scanMode, [in] LONG streamId, [in] IUsgControl* pControlObj, [in] LONG dispId, [in] LONG flags);
+	[id(2), helpstring("method OnControlChangedBSTR")] HRESULT OnControlChangedBSTR([in] BSTR ctrlGUID, [in] LONG scanMode, [in] LONG streamId, [in] IUsgControl* pControlObject, [in] LONG dispId, [in] LONG flags);
+};
+[
+	object,
+	uuid(AC0CEFF6-21E9-472F-B1A3-FAF18557A037),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanLine Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanLine : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[id(3), helpstring("method GetScanLine")] HRESULT GetScanLine([in] FLOAT x, [in] FLOAT y, [out,retval] LONG* value);
+	[id(4), helpstring("method GetCoordinates")] HRESULT GetCoordinates([in] LONG scanLine, [out] FLOAT* angle, [out] FLOAT* x, [out] FLOAT* y);
+	[id(5), helpstring("method GetCoordinates2")] HRESULT GetCoordinates2([in] LONG scanLine, [out] FLOAT* X1, [out] FLOAT* Y1, [out] FLOAT* X2, [out] FLOAT* Y2, [in, defaultvalue(0)] FLOAT startDepth, [in, defaultvalue(0)] FLOAT endDepth);
+};
+[
+	object,
+	uuid(EF1D6EDE-1AB3-429B-8348-6BEA1A43500E),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanLineProperties Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanLineProperties : IDispatch{
+	[id(1), helpstring("returns vector of specified scan line")] HRESULT GetCoordinates([in] LONG scanLine, [out] FLOAT* angle, [out] FLOAT* X, [out] FLOAT* Y);
+	[id(2), helpstring("returns scan line start and end points coordinates")] HRESULT GetCoordinates2([in] LONG scanLine, [out] FLOAT* X1, [out] FLOAT* Y1, [out] FLOAT* X2, [out] FLOAT* Y2, [in, defaultvalue(0)] FLOAT startDepth, [in, defaultvalue(0)] FLOAT endDepth);
+	[id(3), helpstring("returns number of scanline that crosses specified point")] HRESULT GetScanLine([in] FLOAT X, [in] FLOAT Y, [out,retval] LONG* value);
+	[id(4), helpstring("returns the range of valid scanlines for currect scanning")] HRESULT GetScanLinesRange([out] LONG* startLine, [out] LONG* endLine);
+	[id(5), helpstring("returns distance from point to probe's surface or negative on error")] HRESULT GetPointDepth([in] FLOAT X, [in] FLOAT Y, [out,retval] FLOAT* value);
+};
+[
+	object,
+	uuid(3BFE461D-4240-40AC-B5FF-292A6C253A4C),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanLineSelector Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanLineSelector : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(4DD0E32D-23BF-4591-B76D-2C971BB89507),
+	dual,
+	nonextensible,
+	helpstring("IUsgSweepMode Interface"),
+	pointer_default(unique)
+]
+interface IUsgSweepMode : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] SWEEP_MODE* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] SWEEP_MODE newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+
+[
+	object,
+	uuid(0DF080D7-1180-4c94-9003-168174CD3ACD),
+	dual,
+	nonextensible,
+	helpstring("IUsgQualProp Interface"),
+	pointer_default(unique)
+]
+interface IUsgQualProp : IDispatch{
+	[propget, id(1), helpstring("The actual number of frames per second, multiplied by 100, since streaming started")] HRESULT AvgFrameRate([out, retval] LONG* pVal);
+	[propget, id(2), helpstring("The number of frames actually drawn since streaming started")] HRESULT FramesDrawn([out, retval] LONG* pVal);
+	[propget, id(3), helpstring("The number of frames dropped by the renderer")] HRESULT FramesDroppedInRenderer([out, retval] LONG* pVal);
+//	[propget, id(4), helpstring("The average time difference between when the video frames should have been displayed and when they actually were, expressed in milliseconds")] HRESULT AvgSyncOffset([out, retval] LONG* pVal);
+//	[propget, id(5), helpstring("The average time difference between when the video frames should have been displayed and when they actually were")] HRESULT DevSyncOffset([out, retval] LONG* pVal);
+//	[propget, id(6), helpstring("The average time between successive frames delivered to the video renderer")] HRESULT Jitter([out, retval] LONG* pVal);
+};
+
+[
+	object,
+	uuid(481482A0-B0E1-460E-92B9-3159ED9E2748),
+	dual,
+	nonextensible,
+	helpstring("IUsgSweepSpeed Interface"),
+	pointer_default(unique)
+]
+interface IUsgSweepSpeed : IDispatch{
+	[propget, id(1), helpstring("Actual sweep time value, multiplied by 100")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("Actual sweep time value, multiplied by 100")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("List of preseted sweep time values, multiplied by 100")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("Actual sweep speed value, in lines per second")] HRESULT SweepSpeed([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("Actual sweep speed value, in lines per second")] HRESULT SweepSpeed([in] LONG newVal);
+	[id(4), helpstring("Preset available sweep speed or sweep time values")] HRESULT Preset([in] LONG cEntries, [in, size_is(cEntries)] LONG* pValues, [in] LONG iCurrent, [in] BOOL SweepTime);
+};
+[
+	object,
+	uuid(39B7413A-07E4-492D-8A38-5A5E788E30D1),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerColorMap Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerColorMap : IDispatch{
+	[id(1), helpstring("method SetColorMap")] HRESULT SetColorMap([in] PALETTEENTRY* pTable1, [in] LONG size1, [in] PALETTEENTRY* pTable2, [in] LONG size2);
+	[id(2), helpstring("method GetPaletteEntries")] HRESULT GetPaletteEntries([in] LONG startIndex, [in] LONG entries, [out] PALETTEENTRY* pPalEntries);
+};
+[
+	object,
+	uuid(5134078D-9B3D-4DB4-B7F6-BAF5C60180E0),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerColorPriority Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerColorPriority : IDispatch{
+	[propget, id(1), helpstring("priority level in in current mode")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("priority level in in current mode")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("available values of priority")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("priority mode, 0: 2D priority, 1: doppler priority")] HRESULT PriorityMode([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("priority mode, 0: 2D priority, 1: doppler priority")] HRESULT PriorityMode([in] LONG newVal);
+};
+[
+	object,
+	uuid(3373936B-1232-4E94-9BA9-4565D736635D),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerSteerAngle Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerSteerAngle : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(CD490C38-98B9-487A-9B91-653C806FFD21),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerColorThreshold Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerColorThreshold : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(F78B3D8F-F0D9-4129-A0C1-B9977577BEA2),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerBaseLine Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerBaseLine : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(D37B8F18-417C-406B-8E5D-BAEC11623428),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerPRF Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerPRF : IDispatch{
+	[propget, id(1), helpstring("Current PRF value, default unit is [Hz]")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("Current PRF value, default unit is [Hz]")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("list of available values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property VisibleMin")] HRESULT VisibleMin([in] LONG units, [out, retval] LONG* pVal);
+	[propget, id(4), helpstring("property VisibleMax")] HRESULT VisibleMax([in] LONG units, [out, retval] LONG* pVal);
+};
+[
+	object,
+	uuid(7D485326-1EAD-43C7-BC9A-C57CF251D4D3),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerWindow Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerWindow : IDispatch{
+	[id(1), helpstring("method SetWindow")] HRESULT SetWindow([in] LONG startLine, [in] LONG endLine, [in] LONG startDepth, [in] LONG endDepth);
+	[id(2), helpstring("method GetWindow")] HRESULT GetWindow([out] LONG* startLine, [out] LONG* endLine, [out] LONG* startDepth, [out] LONG* endDepth);
+	[id(3), helpstring("method SetWidth")] HRESULT SetWidth([in] LONG startLine, [in] LONG endLine);
+	[id(4), helpstring("methos selects doppler volume")] HRESULT SetVolume([in] LONG startDepth, [in] LONG endDepth);
+	[id(5), helpstring("method retrieves doppler window position")] HRESULT GetWidth([out] LONG* startLine, [out] LONG* endLine);
+	[id(6), helpstring("method retrieves doppler volume")] HRESULT GetVolume([out] LONG* startDepth, [out] LONG* endDepth);
+	[propget, id(7), helpstring("range of valid line values to set")] HRESULT LinesRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(8), helpstring("range of valid window width values to set")] HRESULT WidthRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(9), helpstring("range of valid depth values to set")] HRESULT DepthsRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(10), helpstring("range of valid window volume values to set")] HRESULT VolumesRange([out, retval] VALUE_STEPPING* pVal);
+};
+[
+	object,
+	uuid(6A62BE4A-23C3-4262-B1C6-C20933615E90),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerWallFilter Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerWallFilter : IDispatch{
+	[propget, id(1), helpstring("current filter level in [percent]")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("current filter level in [percent]")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property VisibleMin")] HRESULT VisibleMin([in] LONG units, [out, retval] LONG* pVal);
+	[propget, id(4), helpstring("property VisibleMax")] HRESULT VisibleMax([in] LONG units, [out, retval] LONG* pVal);
+};
+[
+	object,
+	uuid(507BA161-F30F-4B86-9DB2-107B89841A0B),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerSignalScale Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerSignalScale : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(C500DFDD-ACA3-4594-A0EE-75C089B3980C),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerPacketSize Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerPacketSize : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+
+[
+	object,
+	uuid(629FA89F-7BDB-4B79-B3F3-A55AEA078BC0),
+	dual,
+	nonextensible,
+	helpstring("IUsgPulsesNumber Interface"),
+	pointer_default(unique)
+]
+interface IUsgPulsesNumber : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(A2986CE3-3F1A-4361-890D-94816ED1CCF7),
+	dual,
+	nonextensible,
+	helpstring("IUsgCineloop Interface"),
+	pointer_default(unique)
+]
+interface IUsgCineloop : IDispatch{
+	[propget, id(1), helpstring("property CurrentPosition")] HRESULT CurrentPosition([out, retval] LONGLONG* pVal);
+	[propput, id(1), helpstring("property CurrentPosition")] HRESULT CurrentPosition([in] LONGLONG newVal);
+	[propget, id(2), helpstring("property Duration")] HRESULT Duration([out, retval] LONGLONG* pVal);
+	[propget, id(3), helpstring("property Rate")] HRESULT Rate([out, retval] FLOAT* pVal);
+	[propput, id(3), helpstring("property Rate")] HRESULT Rate([in] FLOAT newVal);
+	[propget, id(4), helpstring("property StopTime")] HRESULT StopTime([out, retval] LONGLONG* pVal);
+	[propput, id(4), helpstring("property StopTime")] HRESULT StopTime([in] LONGLONG newVal);
+	[propget, id(5), helpstring("property State")] HRESULT State([out, retval] CINE_STATE* pVal);
+	[propput, id(5), helpstring("property State")] HRESULT State([in] CINE_STATE newVal);
+	[id(6), helpstring("method GetAvailable")] HRESULT GetAvailable([out] LONG* pStart, [out] LONG* pStop);
+	[id(7), helpstring("method GetPositions")] HRESULT GetPositions(LONG* pPos, [out] LONG* pStop);
+	[id(8), helpstring("method SetPositions")] HRESULT SetPositions([in] LONGLONG llStart, [in] LONGLONG llStop);
+	[id(9), helpstring("method GetCapabilities")] HRESULT GetCapabilities([out,retval] LONG* pCaps);
+	[id(10), helpstring("method CheckCapabilities")] HRESULT CheckCapabilities([in,out] LONG* pCaps);
+};
+[
+	object,
+	uuid(5071C20D-306B-4EC2-ABA0-1E20E7D5EA7E),
+	dual,
+	nonextensible,
+	helpstring("IUsgCineStream Interface"),
+	pointer_default(unique)
+]
+interface IUsgCineStream : IDispatch{
+	[propget, id(1), helpstring("property CurrentPosition")] HRESULT CurrentPosition([out, retval] LONGLONG* pVal);
+	[propput, id(1), helpstring("property CurrentPosition")] HRESULT CurrentPosition([in] LONGLONG newVal);
+	[propget, id(2), helpstring("property StopPosition")] HRESULT StopPosition([out, retval] LONGLONG* pVal);
+	[propput, id(2), helpstring("property StopPosition")] HRESULT StopPosition([in] LONGLONG newVal);
+	[propget, id(3), helpstring("property Duration")] HRESULT Duration([out, retval] LONGLONG* pVal);
+	[propget, id(4), helpstring("property Rate")] HRESULT Rate([out, retval] FLOAT* pVal);
+	[propput, id(4), helpstring("property Rate")] HRESULT Rate([in] FLOAT newVal);
+	[propget, id(5), helpstring("property State")] HRESULT State([out, retval] CINE_STATE* pVal);
+	[propput, id(5), helpstring("property State")] HRESULT State([in] CINE_STATE newVal);
+	[propget, id(6), helpstring("property TimeFormat")] HRESULT TimeFormat([out, retval] CINE_TIME_FORMAT* pVal);
+	[propput, id(6), helpstring("property TimeFormat")] HRESULT TimeFormat([in] CINE_TIME_FORMAT newVal);
+	[id(7), helpstring("method ConvertTimeFormat")] HRESULT ConvertTimeFormat([in] LONGLONG srcVal, [in] CINE_TIME_FORMAT srcFormat, [in] CINE_TIME_FORMAT dstFormat, [out,retval] LONGLONG* dstVal);
+	[id(8), helpstring("method GetAvailable")] HRESULT GetAvailable([out] LONGLONG* lEarliest, [out] LONGLONG* lLatest);
+	[id(9), helpstring("method GetShiftPosition")] HRESULT GetShiftPosition([in] LONGLONG from, [in] LONGLONG shift, [in] CINE_TIME_FORMAT timeFormat, [out, retval]LONGLONG* pos);
+	[id(10), helpstring("method SetHoldRange")] HRESULT SetHoldRange([in] LONGLONG from, [in] LONGLONG to);
+	[id(11), helpstring("method GetHoldRange")] HRESULT GetHoldRange([out] LONGLONG* from, [out] LONGLONG* to);
+	[id(12), helpstring("method IsTimeFormatSupported")] HRESULT IsTimeFormatSupported([in] CINE_TIME_FORMAT format, [out,retval] BOOL* support);
+	[id(13), helpstring("method GetContinuousInterval")] HRESULT GetContinuousInterval([in] LONGLONG position, [out] LONGLONG* start, [out] LONGLONG* end);
+	[id(14), helpstring("method SetSelection")] HRESULT SetSelection([in] LONGLONG from, [in] LONGLONG to, [in] SELECTION_MODE mode);
+};
+[
+	object,
+	uuid(04D658E8-6691-4034-ADFD-39EBE7A030DA),
+	dual,
+	nonextensible,
+	helpstring("IUsgCineSink Interface"),
+	pointer_default(unique)
+]
+interface IUsgCineSink : IDispatch{
+	[id(1), helpstring("method GetBufferSize")] HRESULT GetBufferSize([out] LONG* total, [out] LONG* used, [out] LONG* writePos);
+	[id(2), helpstring("method Reset")] HRESULT Reset(void);
+	[id(3), helpstring("method SetBufferSize")] HRESULT SetBufferSize([in] LONG cbSize);
+	[id(4), helpstring("method SaveData")] HRESULT SaveData([in] BSTR strFileName);
+};
+[
+	object,
+	uuid(31BF1183-35D2-4EF3-A1B1-ADEBDEDD81A0),
+	dual,
+	nonextensible,
+	helpstring("IUsgSpatialFilter Interface"),
+	pointer_default(unique)
+]
+interface IUsgSpatialFilter : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property Enabled")] HRESULT Enabled([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property Enabled")] HRESULT Enabled([in] LONG newVal);
+};
+[
+	object,
+	uuid(F81C0C94-B620-46EA-B6C3-5D10E4D7F06C),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerSampleVolume Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerSampleVolume : IDispatch{
+	[id(1), helpstring("method SetVolume")] HRESULT SetVolume([in] LONG startDepth, [in] LONG endDepth);
+	[id(2), helpstring("method GetVolume")] HRESULT GetVolume([out] LONG* startDepth, [out] LONG* endDepth);
+	[propget, id(3), helpstring("property DepthsRange")] HRESULT DepthsRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(4), helpstring("property VolumesRange")] HRESULT VolumesRange([out, retval] VALUE_STEPPING* pVal);
+	[id(5), helpstring("method SetSampleVolume")] HRESULT SetSampleVolume([in] LONG startDepth, [in] LONG endDepth, [in] LONG line);
+	[id(6), helpstring("method GetPhantomVolume")] HRESULT GetPhantomVolume([out] LONG* startDepth, [out] LONG* endDepth);
+};
+[
+	object,
+	uuid(2BFE46DC-DD1A-42C8-8BDB-D034D5FA04DB),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerCorrectionAngle Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerCorrectionAngle : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(DD280DD5-674A-4837-9F03-9FDE77596599),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanConverterPlugin Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanConverterPlugin : IDispatch{
+	[propget, id(1), helpstring("property ScanConverter")] HRESULT ScanConverter([out, retval] IUnknown** pVal);
+};
+
+[
+	object,
+	uuid(2F84D02F-E381-4b94-AB10-52D64013AF4C),
+	dual,
+	nonextensible,
+	helpstring("IUsgScanConverterPlugin2 Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanConverterPlugin2 : IUsgScanConverterPlugin {
+	[propget, id(2), helpstring("property InputPin")] HRESULT InputPin([out, retval] ULONG* pVal);
+	[propget, id(3), helpstring("property OutputPin")] HRESULT OutputPin([out, retval] ULONG* pVal);
+};
+
+[
+	object,
+	uuid(4D2095BD-D9D0-421F-8787-A0C764BED735),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerSignalSmooth Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerSignalSmooth : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(17EBD173-3BBD-427C-9844-F274099B0562),
+	dual,
+	nonextensible,
+	helpstring("IUsgAudioVolume Interface"),
+	pointer_default(unique)
+]
+interface IUsgAudioVolume : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property Mute")] HRESULT Mute([out, retval] BOOL* pVal);
+	[propput, id(3), helpstring("property Mute")] HRESULT Mute([in] BOOL newVal);
+};
+[
+	object,
+	uuid(7BAAC412-6FF0-42C0-85A0-9D679E91FF6B),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerSpectralAvg Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerSpectralAvg : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(533907B0-42A7-474D-AB97-342EEBDD9AA0),
+	dual,
+	nonextensible,
+	helpstring("IUsgBioeffectsIndices Interface"),
+	pointer_default(unique)
+]
+interface IUsgBioeffectsIndices : IDispatch{
+	[id(1), helpstring("method IsSupported")] HRESULT IsSupported([in] BIOEFFECT_INDEX nIndex, [out,retval] LONG* supported);
+	[id(2), helpstring("method GetIndex")] HRESULT GetIndex([in] BIOEFFECT_INDEX nIndex, [out,retval] VALUE_BOUNDS* value);
+};
+[
+	object,
+	uuid(491CFD05-2F69-42F4-9514-AE47890B6E1E),
+	dual,
+	nonextensible,
+	helpstring("IUsgProbeFrequency3 Interface"),
+	pointer_default(unique)
+]
+interface IUsgProbeFrequency3 : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] struct FREQUENCY3* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] struct FREQUENCY3 newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(B27183A9-33AF-40AC-A132-11F034DE7817),
+	dual,
+	nonextensible,
+	helpstring("IUsgDopplerColorTransparency Interface"),
+	pointer_default(unique)
+]
+interface IUsgDopplerColorTransparency : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+	[propget, id(3), helpstring("property TransparencyMode")] HRESULT TransparencyMode([out, retval] LONG* pVal);
+	[propput, id(3), helpstring("property TransparencyMode")] HRESULT TransparencyMode([in] LONG newVal);
+};
+[
+	object,
+	uuid(145E5DFC-246E-4B55-8EB1-4C956E98854F),
+	dual,
+	nonextensible,
+	helpstring("IUsg3dVolumeSize Interface"),
+	pointer_default(unique)
+]
+interface IUsg3dVolumeSize : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(42C2A978-C31B-4235-9292-E53726E5A61C),
+	dual,
+	nonextensible,
+	helpstring("IUsg3dVolumeDensity Interface"),
+	pointer_default(unique)
+]
+interface IUsg3dVolumeDensity : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(4CF81935-DCB3-4C19-9DC9-765306A4714F),
+	dual,
+	nonextensible,
+	helpstring("IUsgFileStorage Interface"),
+	pointer_default(unique)
+]
+interface IUsgFileStorage : IDispatch{
+	[propget, id(1), helpstring("property FileName")] HRESULT FileName([out, retval] BSTR* pVal);
+	[propput, id(1), helpstring("property FileName")] HRESULT FileName([in] BSTR newVal);
+	[id(2), helpstring("method Load")] HRESULT Load(void);
+	[id(3), helpstring("method Save")] HRESULT Save([in] LONG saveFlags);
+	[id(4), helpstring("method CreateDataKey")] HRESULT CreateDataKey([in] LONG_PTR hBaseKey, [in] LONG keyId, [out,retval] LONG_PTR* dataKey);
+	[id(5), helpstring("method OpenDataKey")] HRESULT OpenDataKey([in] LONG_PTR baseKey, [in] LONG keyId, [in] LONG keyIndex, [out,retval] LONG_PTR* dataKey);
+	[id(6), helpstring("method CloseDataKey")] HRESULT CloseDataKey([in] LONG_PTR dataKey);
+	[id(7), helpstring("method GetKeyInfo")] HRESULT GetKeyInfo([in] LONG_PTR dataKey, [out] LONG* subKeys, [out] LONG* dataValues);
+	[id(8), helpstring("method EnumValues")] HRESULT EnumValues([in] LONG_PTR dataKey, [in] LONG ValueNum, [out] LONG* valueId, [out] LONG* valueSize);
+	[id(9), helpstring("method EnumSubkeys")] HRESULT EnumSubkeys([in] LONG_PTR dataKey, [in] LONG subkeyNum, [out] LONG* subkeyId);
+	[id(10), helpstring("method GetValue")] HRESULT GetValue([in] LONG_PTR dataKey, [in] LONG valueId, [in] LONG valueIndex, [in] LONG cbBufferSize ,[out, size_is(cbBufferSize)] BYTE* dataBuffer, [out] LONG* dataSize);
+	[id(11), helpstring("method SetValue")] HRESULT SetValue([in] LONG_PTR dataKey, [in] LONG valueId, [in] LONG valueIndex, [in, size_is(dataSize)] BYTE* dataBuffer, [in] LONG dataSize);
+};
+[
+	object,
+	uuid(1E181F99-13FB-4570-9934-094D6D5274A9),
+	dual,
+	nonextensible,
+	helpstring("IUsgfw2Debug Interface"),
+	pointer_default(unique)
+]
+interface IUsgfw2Debug : IDispatch{
+	[id(1), helpstring("method CreateObjectsDump")] HRESULT CreateObjectsDump([in] BSTR fileName, [in] LONG reserved1, [in] LONG reserved2);
+};
+[
+	object,
+	uuid(19E2FD36-9D47-4A86-BF5E-CD92A00F16D5),
+	dual,
+	nonextensible,
+	helpstring("IUsgPlugin Interface"),
+	pointer_default(unique)
+]
+interface IUsgPlugin : IDispatch{
+	[id(1), helpstring("method AddPlugin")] HRESULT AddPlugin([in] IUnknown* pPlugin, [out,retval] LONG* cookie);
+	[id(2), helpstring("method RemovePlugin")] HRESULT RemovePlugin([in] LONG cookie);
+};
+[
+	object,
+	uuid(9D1D0EB0-C497-42EE-BB75-EB0BA5F774DC),
+	dual,
+	nonextensible,
+	helpstring("IBeamformerPowerState Interface"),
+	pointer_default(unique)
+]
+interface IBeamformerPowerState : IDispatch{
+	[propget, id(1), helpstring("This property indicates the current battery charge level or battery charging status.")] HRESULT BatteryChargeStatus([out, retval] BATTERY_CHARGE_STATUS* pVal);
+	[propget, id(2), helpstring("The reported number of seconds of battery life available when the battery is fully charged, or -1 if the battery life is unknown.")] HRESULT BatteryFullLifetime([out, retval] LONG* pVal);
+	[propget, id(3), helpstring("The approximate percentage, from 0 to 100, of full battery time remaining, or 255 if the percentage is unknown.")] HRESULT BatteryLifePercent([out, retval] LONG* pVal);
+	[propget, id(4), helpstring("The approximate number of seconds of battery life remaining, or –1 if the approximate remaining battery life is unknown.")] HRESULT BatteryLifeRemaining([out, retval] LONG* pVal);
+	[propget, id(5), helpstring("This property indicates whether the system power is online, or that the system power status is unknown.")] HRESULT PowerLineStatus([out, retval] POWER_LINE_STATUS* pVal);
+};
+[
+	object,
+	uuid(EF4959EF-AE06-414B-B290-675127F003D0),
+	dual,
+	nonextensible,
+	helpstring("IUsgScannType Interface"),
+	pointer_default(unique)
+]
+interface IUsgScanType : IDispatch{
+	[propget, id(1), helpstring("The property indicates scaning type according to SCAN_TYPE enumeration")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("The property selects scaning type according to SCAN_TYPE enumeration")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("The property is an object that contain all supported scanning types")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(A0D966E1-6C45-44E3-9887-142DE307689A),
+	dual,
+	nonextensible,
+	helpstring("IUsgSteeringAngle Interface"),
+	pointer_default(unique)
+]
+interface IUsgSteeringAngle : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(D3CAA86B-8D04-4FFD-8F4E-F9E158051D5B),
+	dual,
+	nonextensible,
+	helpstring("IUsgViewAngle Interface"),
+	pointer_default(unique)
+]
+interface IUsgViewAngle : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(2CB1500C-8196-47FF-BECF-61947E0192C5),
+	dual,
+	nonextensible,
+	helpstring("IUsgCompoundFrames Interface"),
+	pointer_default(unique)
+]
+interface IUsgCompoundFrames : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(EEA419CB-8B31-47A3-A070-A68CEE24F3F1),
+	dual,
+	nonextensible,
+	helpstring("IUsgCompoundAngle Interface"),
+	pointer_default(unique)
+]
+interface IUsgCompoundAngle : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+
+[
+	object,
+	uuid(360D17D2-A12A-4bd0-8051-DA3CCBFBB9B7),
+	dual,
+	nonextensible,
+	helpstring("IUsgDeviceCapabilities Interface"),
+	pointer_default(unique)
+]
+interface IUsgDeviceCapabilities : IDispatch{
+	[id(1), helpstring("method ScanModeCaps")] HRESULT ScanModeCaps([in] LONG Parameter, [in] ULONG ScanMode, [out] LONG* Capability, [out,retval] LONG* Support);
+};
+
+[
+	object,
+	uuid(E06602A1-EBE0-4E20-B39C-B938060434BE),
+	dual,
+	nonextensible,
+	helpstring("IUsgUnits Interface"),
+	pointer_default(unique)
+]
+interface IUsgUnits : IDispatch{
+	[id(1), helpstring("method GetCurrent")] HRESULT GetCurrent([in] IUnknown* pControlObject, [out,retval] USG_UNIT* pVal);
+	[id(2), helpstring("method SetCurrent")] HRESULT SetCurrent([in] IUnknown* pControlObject, [in] USG_UNIT* pVal);
+	[id(3), helpstring("method GetValues")] HRESULT GetValues([in] IUnknown* pControlObject, [out, retval] IUsgValues** pVal);
+};
+
+
+[
+	object,
+	uuid(4591F5BF-FBB2-4D6E-BDAD-E629E0635FFB),
+	dual,
+	nonextensible,
+	helpstring("ISampleGrabberFilter Interface"),
+	pointer_default(unique)
+]
+interface ISampleGrabberFilter : IDispatch{
+	[propget, id(1), helpstring("DirectShow ISampleGrabber filter")] HRESULT FilterObj([in] LONG_PTR FilterIndex, [out, retval] IUnknown** pVal);
+};
+[
+	object,
+	uuid(5E2238EF-0DA8-48C4-84C5-E5E61194045D),
+	dual,
+	nonextensible,
+	helpstring("IUsgWindowRF Interface"),
+	pointer_default(unique)
+]
+interface IUsgWindowRF : IDispatch{
+	[id(1), helpstring("method SetWindow")] HRESULT SetWindow([in] LONG startLine, [in] LONG endLine, [in] LONG startDepth, [in] LONG endDepth);
+	[id(2), helpstring("method GetWindow")] HRESULT GetWindow([out] LONG* startLine, [out] LONG* endLine, [out] LONG* startDepth, [out] LONG* endDepth);
+	[id(3), helpstring("method SetWidth")] HRESULT SetWidth([in] LONG startLine, [in] LONG endLine);
+	[id(4), helpstring("methos selects RF volume")] HRESULT SetVolume([in] LONG startDepth, [in] LONG endDepth);
+	[id(5), helpstring("method retrieves RF window position")] HRESULT GetWidth([out] LONG* startLine, [out] LONG* endLine);
+	[id(6), helpstring("method retrieves RF volume")] HRESULT GetVolume([out] LONG* startDepth, [out] LONG* endDepth);
+	[propget, id(7), helpstring("range of valid line values to set")] HRESULT LinesRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(8), helpstring("range of valid window width values to set")] HRESULT WidthRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(9), helpstring("range of valid depth values to set")] HRESULT DepthsRange([out, retval] VALUE_STEPPING* pVal);
+	[propget, id(10), helpstring("range of valid window volume values to set")] HRESULT VolumesRange([out, retval] VALUE_STEPPING* pVal);
+};
+[
+	object,
+	uuid(33857397-F4BB-4B97-9776-39C50736F8BA),
+	dual,
+	nonextensible,
+	helpstring("IUsgStreamEnable Interface"),
+	pointer_default(unique)
+]
+interface IUsgStreamEnable : IDispatch{
+	[propget, id(1), helpstring("property Enable")] HRESULT Enable([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Enable")] HRESULT Enable([in] LONG newVal);
+};
+[
+	object,
+	uuid(3D9B6FC0-2AB7-4CFE-8B04-32D939F80DFE),
+	dual,
+	nonextensible,
+	helpstring("IUsgDataSourceRF Interface"),
+	pointer_default(unique)
+]
+interface IUsgDataSourceRF : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+[
+	object,
+	uuid(5431298D-7FDF-439F-9D23-1DAFDE059F19),
+	dual,
+	nonextensible,
+	helpstring("IUsgMultiBeam Interface"),
+	pointer_default(unique)
+]
+interface IUsgMultiBeam : IDispatch{
+	[propget, id(1), helpstring("property Current")] HRESULT Current([out, retval] LONG* pVal);
+	[propput, id(1), helpstring("property Current")] HRESULT Current([in] LONG newVal);
+	[propget, id(2), helpstring("property Values")] HRESULT Values([out, retval] IUsgValues** pVal);
+};
+
+[
+	uuid(9F73D9AE-FAE1-4C82-AA35-342A0AB173D8),
+	version(1.0),
+	helpstring("Usgfw2 1.0 Type Library")
+]
+library Usgfw2Lib
+{
+	importlib("stdole2.tlb");
+
+	interface IUsgFocus;
+	interface IScanModes;
+	interface IUsgDataView;
+	interface IUsgScanMode;
+	interface IUsgDataStream;
+	interface IProbe;
+	interface IProbe2;
+	interface IBeamformer;
+	interface IUsgCollection;
+	interface IUsgControl;
+	interface IUsgMixerControl;
+	interface IUsgGain;
+	interface IUsgValues;
+	interface IUsgPower;
+	interface IUsgDynamicRange;
+	interface IUsgFrameAvg;
+	interface IUsgRejection2;
+	interface IUsgProbeFrequency2;
+	interface IUsgProbeFrequency3;
+	interface IUsgDepth;
+	interface IUsgImageOrientation;
+	interface IUsgImageEnhancement;
+	interface IUsgViewArea;
+	interface IUsgLineDensity;
+	interface IUsgTgc;
+	interface IUsgClearView;
+	interface IUsgPalette;
+	interface IUsgImageProperties;
+	interface IUsgScanLine;
+	interface IUsgScanLineProperties;
+	interface IUsgScanLineSelector;
+	interface IUsgSweepMode;
+	interface IUsgQualProp;
+	interface IUsgSweepSpeed;
+	interface IUsgDopplerColorMap;
+	interface IUsgDopplerColorPriority;
+	interface IUsgDopplerSteerAngle;
+	interface IUsgDopplerColorThreshold;
+	interface IUsgDopplerBaseLine;
+	interface IUsgDopplerPRF;
+	interface IUsgDopplerWindow;
+	interface IUsgDopplerWallFilter;
+	interface IUsgDopplerSignalScale;
+	interface IUsgDopplerSignalSmooth;
+	interface IUsgDopplerPacketSize;
+	interface IUsgDopplerSpectralAvg;
+	interface IUsgPulsesNumber;
+	interface IUsgCineStream;
+	interface IUsgCineSink;
+	interface IUsgSpatialFilter;
+	interface IUsgDopplerSampleVolume;
+	interface IUsgDopplerCorrectionAngle;
+	interface IUsgScanConverterPlugin;
+	interface IUsgAudioVolume;
+	interface IUsgBioeffectsIndices;
+	interface IUsgDopplerColorTransparency;
+	interface IUsg3dVolumeSize;
+	interface IUsg3dVolumeDensity;
+	interface IUsgFileStorage;
+	interface IUsgPlugin;
+	interface IBeamformerPowerState;
+	interface IUsgScanType;
+	interface IUsgSteeringAngle;
+	interface IUsgViewAngle;
+	interface IUsgCompoundFrames;
+	interface IUsgCompoundAngle;
+	interface IUsgDeviceCapabilities;
+	interface IUsgUnits;
+	interface ISampleGrabberFilter;
+	interface IUsgDataSourceRF;
+	interface IUsgStreamEnable;
+	interface IUsgWindowRF;
+	interface IUsgMultiBeam;
+	struct MyStruct;
+
+[uuid(52EA1133-C021-4c4a-8B32-C142447788DA)]
+struct USG_UNIT_RANGE
+{
+	[helpstring("Base of units of measurement")]
+	UNIT_BASE UnitBase;
+	[helpstring("Minimum scale factor")]
+	SCALE_FACTOR ScaleFactorMin;
+	[helpstring("Maximum scale factor")]
+	SCALE_FACTOR ScaleFactorMax;
+};
+
+
+	typedef [v1_enum] enum tagUsgMixingBitmapFlags
+	{
+		UsgMixingBitmap_Disable = 0x00000001,		// disable bitmap
+		UsgMixingBitmap_hDC = 0x00000002,			// take bitmap form hDC rather than the pMixBitmap
+		UsgMixingBitmap_hBitmap = 0x00000004,		// take bitmap form hBitmap rather than the pMixBitmap or hDC
+		UsgMixingBitmap_SrcColorKey = 0x00000008,	// Indicates that the clrSrcKey member is valid and should be used when blending
+		UsgMixingBitmap_SrcRect = 0x00000010,
+		UsgMixingBitmap_FilterMode = 0x00000020,
+		UsgMixingBitmap_SrcPerPixelAlpha = 0x00000040,	// Indicates that Alpha channel is valid and should be used when blending. Only for 32 bits bitmaps (ARGB) format.
+		UsgMixingBitmap_MixBitmap = 0x10000000,		// take bitmap from pMixBitmap
+		UsgMixingBitmap_SplashBitmap = 0x20000000,		// bitmap specified is a splash bitmap
+	} UsgMixingBitmapFlags;
+
+	typedef [v1_enum] enum tagScanMode
+	{
+		SCAN_MODE_UNKNOWN = 0,
+		SCAN_MODE_B = 1,
+		SCAN_MODE_M = 2,
+		SCAN_MODE_A = 3,
+		SCAN_MODE_PW = 4,
+		SCAN_MODE_BM = 5,
+		SCAN_MODE_BA = 6,
+		SCAN_MODE_BPW = 7,
+		SCAN_MODE_CFM = 8,
+		SCAN_MODE_BCFM = 9,
+		SCAN_MODE_BCFM_PW = 10,
+		SCAN_MODE_PDI = 11,
+		SCAN_MODE_BPDI = 12,
+		SCAN_MODE_BPDI_PW = 13,
+		SCAN_MODE_DPDI = 14,
+		SCAN_MODE_BDPDI = 15,
+		SCAN_MODE_BDPDI_PW = 16,
+		SCAN_MODE_B2 = 17,
+		SCAN_MODE_PWAUDIO = 18,
+		SCAN_MODE_3D = 19,
+		SCAN_MODE_CW = 20,
+		SCAN_MODE_CM = 21,
+		SCAN_MODE_BM_CM = 22,
+		SCAN_MODE_M_CM = 23,
+		SCAN_MODE_RFB = 24,
+		SCAN_MODES_CUSTOM = 1000,
+	} SCAN_MODE;
+
+	typedef [v1_enum] enum tagImageEnhancement
+	{
+		// IMAGE_ENHANC_NONE = 0,
+		IMAGE_ENHANC_SHARPEN = 1,
+		IMAGE_ENHANC_SHARPENMORE = 2,
+		IMAGE_ENHANC_SMOOTH = 3,
+		IMAGE_ENHANC_SMOOTHMORE = 4,
+	} IMAGE_ENHANCEMENT;
+
+	typedef [v1_enum] enum tagClearView
+	{
+		SRF_CV1 = 1,
+		SRF_CV2 = 2,
+		SRF_CV3 = 3,
+		SRF_CV4 = 4,
+		SRF_CV5 = 5,
+		SRF_CV6 = 6,
+		SRF_CV7 = 7,
+		SRF_CV8 = 8,
+		SRF_CV9 = 9,
+		SRF_CV10 = 10,
+		SRF_CV11 = 11,
+		SRF_CV12 = 12,
+		SRF_CV13 = 13,
+		SRF_CV14 = 14,
+		SRF_CV15 = 15,
+		SRF_CV16 = 16,
+		SRF_PV1 = 101,
+		SRF_PV2 = 102,
+		SRF_PV3 = 103,
+		SRF_PV4 = 104,
+		SRF_PV5 = 105,
+		SRF_PV6 = 106,
+		SRF_PV7 = 107,
+		SRF_PV8 = 108,
+		SRF_PV9 = 109,
+		SRF_PV10 = 110,
+		SRF_PV11 = 111,
+		SRF_PV12 = 112,
+		SRF_PV13 = 113,
+		SRF_PV14 = 114,
+		SRF_PV15 = 115,
+		SRF_PV16 = 116,
+		SRF_NV1 = 201,
+		SRF_NV2 = 202,
+		SRF_NV3 = 203,
+		SRF_NV4 = 204,
+		SRF_NV5 = 205,
+		SRF_NV6 = 206,
+		SRF_NV7 = 207,
+		SRF_NV8 = 208,
+		SRF_NV9 = 209,
+		SRF_NV10 = 210,
+		SRF_NV11 = 211,
+		SRF_NV12 = 212,
+		SRF_NV13 = 213,
+		SRF_NV14 = 214,
+		SRF_NV15 = 215,
+		SRF_NV16 = 216,
+		SRF_NVC1 = 301,
+		SRF_NVC2 = 302,
+		SRF_NVC3 = 303,
+		SRF_NVC4 = 304,
+		SRF_NVC5 = 305,
+		SRF_NVC6 = 306,
+		SRF_NVC7 = 307,
+		SRF_NVC8 = 308,
+		SRF_NVC9 = 309,
+		SRF_NVC10 = 310,
+		SRF_NVC11 = 311,
+		SRF_NVC12 = 312,
+		SRF_NVC13 = 313,
+		SRF_NVC14 = 314,
+		SRF_NVC15 = 315,
+		SRF_NVC16 = 316,
+		SRF_QV1 = 401,
+		SRF_QV2 = 402,
+		SRF_QV3 = 403,
+		SRF_QV4 = 404,
+		SRF_QV5 = 405,
+		SRF_QV6 = 406,
+		SRF_QV7 = 407,
+		SRF_QV8 = 408,
+		SRF_QV9 = 409,
+		SRF_QV10 = 410,
+		SRF_QV11 = 411,
+		SRF_QV12 = 412,
+		SRF_QV13 = 413,
+		SRF_QV14 = 414,
+		SRF_QV15 = 415,
+		SRF_QV16 = 416,
+	} CLEAR_VIEW;
+
+	typedef [v1_enum] enum tagLineDensity
+	{
+		// old values. enum update from 2007/05/11
+		// LINE_DENSITY_NORMAL = 0,
+		// LINE_DENSITY_HIGH = 1,
+
+		LINE_DENSITY_LOW = 8,
+		LINE_DENSITY_MEDIUM = 16,
+		LINE_DENSITY_STANDARD = 24,
+		LINE_DENSITY_HIGH = 32,
+	} LINE_DENSITY;
+
+	typedef [v1_enum] enum tagFocusMode
+	{
+		FOCUS_MODE_MULTI = 1,
+		FOCUS_MODE_DYNAMIC = 2,
+	} FOCUS_MODE;
+
+	typedef [v1_enum] enum tagFileCreateFlags
+	{
+		FCF_OPEN = 0,
+		FCF_CREATE = 1,
+		FCF_RECREATE = 2,
+	} FILE_CREATE_FLAGS;
+
+	typedef [v1_enum] enum tagFileSaveFlags
+	{
+		FSF_ALL = 0,
+		FSF_CUSTOM_DATA_ONLY = 1,
+		FSF_RAW_DATA_ONLY = 2,
+	} FILE_SAVE_FLAGS;
+
+	typedef [v1_enum] enum tagTgcControlMode
+	{
+		TGC_CTRLMODE_DEPTHFIXED = 1,
+		TGC_CTRLMODE_IMAGEFIXED = 2,
+	} TGC_CTRLMODE;
+
+	typedef [v1_enum] enum tagScanType
+	{
+		SCAN_TYPE_UNKNOWN = 0,
+		SCAN_TYPE_NORMAL = 1,
+		SCAN_TYPE_VIRTUALCONVEX = 2,
+		SCAN_TYPE_COMPOUND = 3,
+		SCAN_TYPE_COMPOUND_SLOPLEFT = 4,
+		SCAN_TYPE_COMPOUND_SLOPRIGHT = 5,
+	} SCAN_TYPE;
+
+	typedef [v1_enum] enum tagScanModeCaps
+	{
+		MODECAPS_ScanType_Steering = 0,
+		MODECAPS_ScanType_Compound = 1,
+		MODECAPS_ScanType_VirtualConvex = 2,
+		MODECAPS_ScanType_CompoundSlop = 3,
+	} SCAN_MODE_CAPS;
+
+	[
+		uuid(4185D3A0-FC5F-42D8-8840-ED8E1D103C1F),
+		helpstring("Usgfw2 Class")
+	]
+	coclass Usgfw2
+	{
+		[default] interface IUsgfw2;
+		[default, source] interface IUsgDeviceChangeSink;
+	};
+	[
+		uuid(994320B8-A50D-476F-AA50-50D0EFF76ED3),
+		helpstring("UsgPaletteCalculator Class")
+	]
+	coclass UsgPaletteCalculator
+	{
+		[default] interface IUsgPaletteCalculator;
+	};
+	[
+		uuid(25ACD2F1-5350-4EA8-AE84-67C19C7F692B),
+		helpstring("UsgControl class"),
+		noncreatable
+	]
+	coclass UsgControl
+	{
+		[default] interface IUsgControl;
+		[default, source] interface IUsgControlChangeSink;
+	};
+
+	[
+		uuid(82CB5897-C237-42BB-BADD-F6C6966EE929),
+		helpstring("UsgDataView class"),
+		noncreatable
+	]
+	coclass UsgDataView
+	{
+		[default] interface IUsgDataView;
+		[default, source] interface IUsgCtrlChangeCommon;
+	};
+	
+/*
+	[
+		uuid(2C435588-23E2-400D-828E-956A1DB490EC),
+		helpstring("UsgScanLine Class")
+	]
+	coclass UsgScanLine
+	{
+		[default] interface IUsgScanLine;
+	};
+	[
+		uuid(BEEF2723-2520-4C90-9E51-C14551841C4B),
+		helpstring("UsgDopplerSampleVolume Class")
+	]
+	coclass UsgDopplerSampleVolume
+	{
+		[default] interface IUsgDopplerSampleVolume;
+	};
+	[
+		uuid(579E0D79-B127-4CF1-A242-C22D3AF6CFFF),
+		helpstring("UsgDopplerCorrectionAngle Class")
+	]
+	coclass UsgDopplerCorrectionAngle
+	{
+		[default] interface IUsgDopplerCorrectionAngle;
+	};
+	[
+		uuid(04AE85A9-7931-434D-9474-D95C1458E8CB),
+		helpstring("UsgScanConverterPlugin Class")
+	]
+	coclass UsgScanConverterPlugin
+	{
+		[default] interface ISampleGrabberFilter;
+	};
+	[
+		uuid(49E05BA1-A3A8-4C25-AEDF-78A817E883E1),
+		helpstring("UsgAudioVolume Class")
+	]
+	coclass UsgAudioVolume
+	{
+		[default] interface IUsgAudioVolume;
+	};
+	[
+		uuid(4D348506-C723-4BB8-A3EC-D826513E1818),
+		helpstring("UsgDopplerSpectralAvg Class")
+	]
+	coclass UsgDopplerSpectralAvg
+	{
+		[default] interface IUsgDopplerSpectralAvg;
+	};
+	[
+		uuid(50220347-CEAA-4D70-8F30-B83CB7CBAF3D),
+		helpstring("UsgBioeffectsIndices Class")
+	]
+	coclass UsgBioeffectsIndices
+	{
+		[default] interface IUsgBioeffectsIndices;
+	};
+	[
+		uuid(882C0D9F-781F-4286-A7EA-8F9A1A5F100D),
+		helpstring("UsgProbeFreq3 Class")
+	]
+	coclass UsgProbeFreq3
+	{
+		[default] interface IUsgProbeFrequency3;
+	};
+	[
+		uuid(B42232A7-974F-4D2E-8CD6-4DBDB396CA90),
+		helpstring("UsgDopplerColorTransparency Class")
+	]
+	coclass UsgDopplerColorTransparency
+	{
+		[default] interface IUsgDopplerColorTransparency;
+	};
+	[
+		uuid(A1007407-B24D-4C5E-8D81-94DD0F0E93BF),
+		helpstring("Usg3dVolumeSize Class")
+	]
+	coclass Usg3dVolumeSize
+	{
+		[default] interface IUsg3dVolumeSize;
+	};
+	[
+		uuid(6A90E9A2-A933-44BA-8597-7DBDF18CCC62),
+		helpstring("Usg3dVolumeDensity Class")
+	]
+	coclass Usg3dVolumeDensity
+	{
+		[default] interface IUsg3dVolumeDensity;
+	};
+	[
+		uuid(92591ADE-3A54-46E1-9ABB-DDEF51588947),
+		helpstring("UsgFileStorage Class")
+	]
+	coclass UsgFileStorage
+	{
+		[default] interface IUsgFileStorage;
+	};
+	*/
+	[
+		uuid(8E094E9D-FE44-431D-8881-6B308779304E),
+		helpstring("Usgfw2Debug Class")
+	]
+	coclass Usgfw2Debug
+	{
+		[default] interface IUsgfw2Debug;
+	};
+	/*
+	[
+		uuid(2AAE5868-CB16-459C-815E-A464962E37C4),
+		helpstring("UsgPlugin Class")
+	]
+	coclass UsgPlugin
+	{
+		[default] interface IUsgPlugin;
+	};
+	*/
+	/*
+	[
+		uuid(DA212FDB-CCBA-4F27-9AB8-C02071E9F119),
+		helpstring("BeamformerPowerState Class")
+	]
+	coclass BeamformerPowerState
+	{
+		[default] interface IBeamformerPowerState;
+	};
+	*/
+	/*
+	[
+		uuid(1D558B13-7209-478D-8921-A5A995F8DECF),
+		helpstring("UsgScanType Class")
+	]
+	coclass UsgScanType
+	{
+		[default] interface IUsgScanType;
+	};
+	[
+		uuid(D0B041A1-C254-472A-85AA-55F17DA16EC6),
+		helpstring("UsgSteeringAngle Class")
+	]
+	coclass UsgSteeringAngle
+	{
+		[default] interface IUsgSteeringAngle;
+	};
+	[
+		uuid(BE9BC9A5-2ECF-44EB-A5F2-47DBDC71D46A),
+		helpstring("UsgViewAngle Class")
+	]
+	coclass UsgViewAngle
+	{
+		[default] interface IUsgViewAngle;
+	};
+	[
+		uuid(9291CD55-50A1-4B5A-8DB0-41CAB2A570A1),
+		helpstring("UsgCompoundFrames Class")
+	]
+	coclass UsgCompoundFrames
+	{
+		[default] interface IUsgCompoundFrames;
+	};
+	[
+		uuid(0D994B6A-7B7C-4EA0-8B5B-431445733B57),
+		helpstring("UsgCompoundAngle Class")
+	]
+	coclass UsgCompoundAngle
+	{
+		[default] interface IUsgCompoundAngle;
+	};
+	[
+		uuid(15DBCB2E-5104-4093-B082-19FD0E51219A),
+		helpstring("UsgUnits Class")
+	]
+	coclass UsgUnits
+	{
+		[default] interface IUsgUnits;
+	};
+	[
+		uuid(7FD63618-7894-4BFA-B5B7-3B7F87B85DAD),
+		helpstring("SampleGrabberFilter Class")
+	]
+	coclass SampleGrabberFilter
+	{
+		[default] interface ISampleGrabberFilter;
+	};
+
+	[
+		uuid(D0733651-7B99-4D1A-94A6-7197BC144C89),
+		helpstring("UsgWindowRF Class")
+	]
+	coclass UsgWindowRF
+	{
+		[default] interface IUsgWindowRF;
+	};
+	[
+		uuid(35F983B5-AC01-4A0B-9AD3-8E7C24B9F636),
+		helpstring("UsgStreamEnable Class")
+	]
+	coclass UsgStreamEnable
+	{
+		[default] interface IUsgStreamEnable;
+	};
+	[
+		uuid(1B014BE4-3651-4472-9781-0789DAB11A1F),
+		helpstring("UsgDataSourceRF Class")
+	]
+	coclass UsgDataSourceRF
+	{
+		[default] interface IUsgDataSourceRF;
+	};
+	*/
+};
