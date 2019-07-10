@@ -20,7 +20,7 @@ virtual camera device for the ultrasound image to be seend as a virual camera.
 The project also requires the use of the splitcamera plugin to let the filter be seeing 
 by any app on the computer.
 
-then 
+
 Used objects and interfaces:
 Usgfw2Class, IProbe, IUsgDataView, IUsgMixerControl, IUsgGain, IUsgScanConverterPlugin.
 
